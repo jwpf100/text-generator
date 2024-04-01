@@ -1,0 +1,8 @@
+{
+  "watch": ["server"],
+  "ext": ".ts,.js,.json",
+  "ignore": [],
+  "execMap": {
+    "ts": "ts-node"
+  }
+}

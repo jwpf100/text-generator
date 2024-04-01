@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build", // where to put the compiled JS files
+    "target": "ES2020", // which level of JS support to target
+    "moduleResolution": "nodenext",
+    "module": "nodenext", // which system for the program AMD, UMD, System, CommonJS
+    "lib": ["DOM"], // To include things like 'fetch'
+    // Recommended: Compiler complains about expressions implicitly typed as 'any'
+    "noImplicitAny": true
+  },
+  "include": ["server"], // which files to compile
+  "exclude": ["node_modules", "**/*.spec.ts"] // which files to skip
+}
