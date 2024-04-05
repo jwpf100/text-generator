@@ -1,15 +1,18 @@
 import './App.css'
 import { HealthCheck } from './components/Healthcheck'
+import { TextGenerator } from './modules'
+import { Box, CssBaseline } from '@mui/material'
 
 function App() {
 
   return (
     <>
+    <CssBaseline />
+    <Box>
       <h1>Text Generator App</h1>
-      <div className='card'>
-        <h3>Healthcheck: </h3>
-        <HealthCheck />
-      </div>
+      <HealthCheck />
+      <TextGenerator.Screens.PromptGenerator />
+    </Box>
     </>
   )
 }
