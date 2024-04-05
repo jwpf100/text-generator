@@ -1,3 +1,4 @@
+import { Container } from "@mui/material"
 import axios from "axios"
 import { useEffect, useState } from "react"
 
@@ -23,8 +24,9 @@ export const HealthCheck = () => {
   }, [])
   
   return (
-    <div>
-      <h2>{healthCheck}</h2>
-    </div>
+    <Container fixed>
+      <h5>Healthcheck</h5>
+      <h5>{healthCheck}</h5>
+    </Container>
   )
 }
