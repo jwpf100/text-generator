@@ -6,9 +6,7 @@ import { TextFieldComponent } from '../FormComponents/TextFieldComponent'
 import { ButtonComponent } from '../FormComponents/ButtonComponent'
 import { useState } from 'react'
 
-export const PromptGeneratorForm = ({
-  setFormData
-}) => {
+export const PromptGeneratorForm = ({ setFormData }) => {
   const [key, setKey] = useState(1)
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -35,19 +33,22 @@ export const PromptGeneratorForm = ({
   return (
     <Box>
       <form key={key} onSubmit={handleSubmit}>
-        
         <SelectComponent id='select-template-type' label='Select letter template:' name='templateType' selectOptions={templateTypeSelectOptions} />
-        
+
         <SelectComponent id='select-paragraph-number' label='Select number of paragraphs:' name='numberOfParagraphs' selectOptions={paragraphSelectOptions} />
-        
-        <TextFieldComponent id='text-field-resume' label='Paste your resume:' name='resume' rows={6}/>
-        
+
+        <TextFieldComponent id='text-field-resume' label='Paste your resume:' name='resume' rows={6} />
+
         <TextFieldComponent id='text-field-job-title' label='Job title:' name='job title' rows={1} />
 
         <TextFieldComponent id='text-field-job-description' label='Job description:' name='job Description' rows={6} />
 
-        <ButtonComponent variant='contained' type={'submit'}>{'Submit'}</ButtonComponent>
-        <ButtonComponent variant='outlined' type={'reset'} onClick={() => setKey(key + 1)}>{'Reset Form'}</ButtonComponent>
+        <ButtonComponent variant='contained' type={'submit'} fullWidth sx={{ my: 1 }}>
+          {'Submit'}
+        </ButtonComponent>
+        <ButtonComponent variant='outlined' type={'reset'} onClick={() => setKey(key + 1)} fullWidth sx={{ my: 1 }}>
+          {'Reset Form'}
+        </ButtonComponent>
       </form>
     </Box>
   )
