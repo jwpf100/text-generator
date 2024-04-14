@@ -1,7 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 
 export type TSelectOption = {
-  value: string | number
+  value: string
   label: string
 }
 
@@ -10,8 +10,8 @@ export interface ISelectProps {
   label: string
   name: string
   selectOptions: TSelectOption[]
-  value?: string | number
-  onClick?: (value: string | number) => void
+  value?: string
+  onChange?: (value: string) => void
 }
 
 export const SelectComponent = ({
@@ -20,7 +20,7 @@ export const SelectComponent = ({
   name,
   selectOptions,
   value, 
-  onClick
+  onChange
 }: ISelectProps) => {
   const options = selectOptions.map((item) => (
     <MenuItem key={item.value} value={item.value}>
@@ -28,16 +28,16 @@ export const SelectComponent = ({
     </MenuItem>
   ))
 
-  const handleOnClick = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if(onClick) {
-      onClick(event.target.value)
+  const handleonChange = (event: SelectChangeEvent<string>) => {
+    if(onChange) {
+      onChange(event.target.value)
     }
   }
 
   return (
     <FormControl fullWidth margin='normal'>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
-      <Select name={name} labelId={`${id}-label`} id={id} label={label} value={value} onChange={handleOnClick}>
+      <Select name={name} labelId={`${id}-label`} id={id} label={label} value={value} onChange={handleonChange}>
         {...options}
       </Select>
     </FormControl>

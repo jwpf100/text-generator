@@ -6,14 +6,17 @@ import { TextFieldComponent } from '../FormComponents/TextFieldComponent'
 import { ButtonComponent } from '../FormComponents/ButtonComponent'
 import { useState } from 'react'
 
-export const PromptGeneratorForm = ({ handleSubmit }) => {
+interface IPromptGeneratorFormProps {
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+}
+
+export const PromptGeneratorForm = ({ handleSubmit }: IPromptGeneratorFormProps) => {
   const [key, setKey] = useState(1)
-  const [templateType, setTemplateType] = useState(undefined)
+  const [templateType, setTemplateType] = useState<string>('')
   const fields = get(coverLetterConfig, `promptTemplates[${templateType}].additionalFields`, [])
   
-  const handleResetForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setTemplateType(undefined)
+  const handleResetForm = () => {
+    setTemplateType('')
     setKey(key + 1)
   }
   
@@ -29,7 +32,7 @@ export const PromptGeneratorForm = ({ handleSubmit }) => {
   const numberOfParagraphs = get(coverLetterConfig, 'numberOfParagraphs')
   const paragraphSelectOptions = range(1, numberOfParagraphs + 1).map((number) => {
     return {
-      value: number,
+      value: number.toString(),
       label: `${number}`
     }
   })
@@ -37,7 +40,7 @@ export const PromptGeneratorForm = ({ handleSubmit }) => {
   return (
     <Box>
       <form key={key} onSubmit={handleSubmit}>
-        <SelectComponent id='select-template-type' label='Select letter template:' name='templateType' selectOptions={templateTypeSelectOptions} value={templateType} onClick={setTemplateType}/>
+        <SelectComponent id='select-template-type' label='Select letter template:' name='templateType' selectOptions={templateTypeSelectOptions} value={templateType} onChange={setTemplateType}/>
 
         {includes(fields, 'numberOfParagraphs') && 
         <SelectComponent id='select-paragraph-number' label='Select number of paragraphs:' name='numberOfParagraphs' selectOptions={paragraphSelectOptions} />
@@ -58,7 +61,7 @@ export const PromptGeneratorForm = ({ handleSubmit }) => {
         <ButtonComponent variant='contained' type={'submit'} fullWidth sx={{ my: 1 }}>
           {'Submit'}
         </ButtonComponent>
-        <ButtonComponent variant='outlined' type={'reset'} onClick={handleResetForm} fullWidth sx={{ my: 1 }}>
+        <ButtonComponent variant='outlined' type={'button'} onClick={handleResetForm} fullWidth sx={{ my: 1 }}>
           {'Reset Form'}
         </ButtonComponent>
       </form>

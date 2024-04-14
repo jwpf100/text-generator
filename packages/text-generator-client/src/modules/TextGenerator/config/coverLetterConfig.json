@@ -16,8 +16,9 @@
       "additionalFields": ["jobTitle",  "jobSource", "resume", "jobDescription" ],
       "resumeIntro": "Here is my resume:",
       "jobDescriptionIntro": "Here is the description of the job I'm applying for:"
-    },
-    "WIP": {
+    }
+  },
+  "promptTemplatesWIP": {
     "narrative": {
       "title": "Narrative",
       "prompt": "I want you to act as a cover letter writer. I'd like you to help me write a cover letter that consists of three paragraphs and follows this storytelling structure. In the first paragraph, introduce my professional background that is relevant to the job of [3D Artist]. Use the next paragraph to share a relevant story from my experience that demonstrates my skills, experience, or personal qualities. Explain how this story relates to the job requirements. Sum up the cover letter with a paragraph about why I'm a great fit for the role, in terms of skills and enthusiasm for the industry. Use professional language and tone, but at the same time keep this cover letter compact. Follow some best industry practices. If you've understood the task, can I please paste in my resume?"
@@ -37,7 +38,6 @@
     "fullPrompt": {
       "title": "Full",
       "prompt": "I want you to act as a cover letter writer. I will provide you with the job advert and my resume. Use this information to create a professional and effective cover letter. Focus the cover letter to be written using the best practices and industry standards. Tailor the cover letter's content to the specific job and company that I am applying to, highlighting my relevant skills and experience. Also, make sure to explain why I am a strong candidate for the position. Please ensure that the cover letter is clear and concise. The cover letter should have appropriate formatting and layout to make it visually appealing and easy to read. Do make sure that it effectively communicates my qualifications and interest in the job. Finally, don't include any personal opinions or statements. I'll first provide you with my resume, then the job advert. Is that okay?"
-    }
     }
   },
   "helperPrompts": {
