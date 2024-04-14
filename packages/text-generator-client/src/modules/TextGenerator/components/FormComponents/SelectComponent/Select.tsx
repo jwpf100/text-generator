@@ -10,6 +10,8 @@ export interface ISelectProps {
   label: string
   name: string
   selectOptions: TSelectOption[]
+  value?: string | number
+  onClick?: (value: string | number) => void
 }
 
 export const SelectComponent = ({
@@ -17,17 +19,26 @@ export const SelectComponent = ({
   label, 
   name,
   selectOptions,
+  value, 
+  onClick
 }: ISelectProps) => {
-  const paragraphOptions = selectOptions.map((item) => (
+  const options = selectOptions.map((item) => (
     <MenuItem key={item.value} value={item.value}>
       {item.label}
     </MenuItem>
   ))
+
+  const handleOnClick = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if(onClick) {
+      onClick(event.target.value)
+    }
+  }
+
   return (
     <FormControl fullWidth margin='normal'>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
-      <Select name={name} labelId={`${id}-label`} id={id} label={label}>
-        {...paragraphOptions}
+      <Select name={name} labelId={`${id}-label`} id={id} label={label} value={value} onChange={handleOnClick}>
+        {...options}
       </Select>
     </FormControl>
   )
