@@ -18,6 +18,6 @@ export async function initialiseDependencies(env: NodeJS.ProcessEnv){
     await llmController.initialise({})
 
   } catch (error: unknown) {
-    console.log()
+    console.log('Error initialising dependencies: ', error)
   }
 }

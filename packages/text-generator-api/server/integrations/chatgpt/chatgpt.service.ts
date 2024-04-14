@@ -1,11 +1,9 @@
 import { Response } from 'express'
 import { AbstractDependency } from '../../modules/llm/llm.controller'
-import { forEach } from 'lodash'
 import OpenAI from 'openai'
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
 
 export interface IChatGPTService extends AbstractDependency {
-  getExampleResponseFromPrompt(): Promise<string>
   streamModelResponse(prompt: unknown, res: Response): Promise<void>
 }
 
@@ -22,7 +20,6 @@ export class ChatGPTService implements AbstractDependency {
     this.config = {}
     this.initialised = false
     this.openai = null
-    this.getExampleResponseFromPrompt = this.getExampleResponseFromPrompt.bind(this)
     this.streamModelResponse = this.streamModelResponse.bind(this)
   }
 
@@ -39,23 +36,6 @@ export class ChatGPTService implements AbstractDependency {
   async teardown() {
     this.initialised = false
     return null
-  }
-
-  async getExampleResponseFromPrompt() {
-    try {
-      const res = await fetch('https://jsonplaceholder.typicode.com/users')
-      console.log('🚀 ~ ChatGPTService ~ getResponseFromPrompt ~ res:', res)
-      const headerDate = res.headers && res.headers.get('date') ? res.headers.get('date') : 'no response date'
-      console.log(res.status)
-      console.log('Date in header: ' + headerDate)
-      const users = await res.json()
-
-      forEach(users, (user) => console.log('User: ' + user.name))
-      return users
-    } catch (error) {
-      console.log(error)
-      return error
-    }
   }
 
   async streamModelResponse(prompt: ChatCompletionMessageParam[], res: Response) {
@@ -75,7 +55,7 @@ export class ChatGPTService implements AbstractDependency {
         res.end()
       }
     } catch (error) {
-      console.log(error)
+      console.log('Error streaming response: ', error)
     }
   }
 }

@@ -10,7 +10,6 @@ v1Router.get('/healthcheck', (req: unknown, res: { send: (arg0: string) => void 
 
 v1Router.post('/text-generator', async (req: Request, res: Response) => {
   try {
-    // console.log('Request received: ', req.body)
     await llmController.getModelResponse(req, res)    
   } catch (error) {
     console.error(error)

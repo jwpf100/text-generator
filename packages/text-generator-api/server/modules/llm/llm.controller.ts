@@ -29,7 +29,6 @@ export class LLMController {
     this.initialised = false
     this.llmService = llmService
     this.parsePromptInputs = this.parsePromptInputs.bind(this)
-    this.generateResponse = this.generateResponse.bind(this)
   }
 
   async initialise(config: IConfig) {
@@ -47,7 +46,6 @@ export class LLMController {
 
   // Turn config from client into suitable prompt
   async parsePromptInputs(promptInputs: { [key: string]: string }) {
-  console.log("🚀 ~ LLMController ~ parsePromptInputs ~ promptInputs:", promptInputs)
     const defaultPromptInputs = {
       style: 'professional'
     }
@@ -89,18 +87,11 @@ export class LLMController {
     return finalPrompt
   }
 
-  async generateResponse() {
-    const response = await this.llmService.getExampleResponseFromPrompt()
-    return response
-  }
 
   async getModelResponse(req: Request, res: Response) {
     console.log('LLMController - Request received:', req.body)
     const prompt = await this.parsePromptInputs(req.body)
-    console.log('🚀 ~ LLMController ~ getModelResponse ~ prompt:', prompt)
-    // const response = await this.llmService.streamModelResponse(prompt, res)
-    res.send(prompt)
-    const response = 'Mock response'
+    const response = await this.llmService.streamModelResponse(prompt, res)
     return response
   }
 }
