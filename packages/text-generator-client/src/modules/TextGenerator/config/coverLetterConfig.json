@@ -11,8 +11,14 @@
   "promptTemplates": {
     "standard": {
       "title": "Standard",
-      "prompt": "I want you to act as a cover letter writer. I'd like you to help me write a cover letter that consists of three paragraphs and follows this standardized structure. In the first paragraph, mention the role I'm applying for [Senior Architect] and that I've learned about it [from a friend who works at the company]. Use the next paragraph to highlight any of my relevant skills, experiences, or accomplishments that align with the job. The third and final paragraph should sign off with my excitement for the role. I'd also like to thank the recruiters for their time in assessing my resume and how I look forward to the next stages of the process. Ensure that the cover letter uses professional language and tone and follows industry best practice examples. If you've understood the assessment, can I please paste in my resume?"
-    },
+      "system": "I want you to act as an experienced cover letter writer.",
+      "user": "I'd like you to help me write a cover letter that consists of three paragraphs and follows this standardized structure. In the first paragraph, mention the role I'm applying which is <%= jobTitle %> and that I've learned about it from <%= jobSource %>. Use the next paragraph to highlight any of my relevant skills, experiences, or accomplishments that align with the job. The third and final paragraph should sign off with my excitement for the role. I'd also like to thank the recruiters for their time in assessing my resume and how I look forward to the next stages of the process. Ensure that the cover letter uses <%= style %> language and tone and follows industry best practice examples.",
+      "additionalFields": ["jobTitle",  "jobSource", "resume", "jobDescription" ],
+      "resumeIntro": "Here is my resume:",
+      "jobDescriptionIntro": "Here is the description of the job I'm applying for:"
+    }
+  },
+  "promptTemplatesWIP": {
     "narrative": {
       "title": "Narrative",
       "prompt": "I want you to act as a cover letter writer. I'd like you to help me write a cover letter that consists of three paragraphs and follows this storytelling structure. In the first paragraph, introduce my professional background that is relevant to the job of [3D Artist]. Use the next paragraph to share a relevant story from my experience that demonstrates my skills, experience, or personal qualities. Explain how this story relates to the job requirements. Sum up the cover letter with a paragraph about why I'm a great fit for the role, in terms of skills and enthusiasm for the industry. Use professional language and tone, but at the same time keep this cover letter compact. Follow some best industry practices. If you've understood the task, can I please paste in my resume?"
