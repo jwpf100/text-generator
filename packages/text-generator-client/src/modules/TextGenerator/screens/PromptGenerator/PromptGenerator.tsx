@@ -51,11 +51,9 @@ export const PromptGenerator = () => {
         runner.on('content', (delta) => {
           setTextOutput(prevText => prevText + delta)
         })
-        const finalChatCompletion = await runner.finalChatCompletion()
-        console.log("🚀 ~ getTextPromptResponse ~ finalChatCompletion:", finalChatCompletion)
   
         const finalOutput = await runner.finalContent()
-        console.dir(finalOutput, { depth: null })
+        // console.dir(finalOutput, { depth: null })
         return finalOutput
       }
       throw new Error('Error: No data returned')
