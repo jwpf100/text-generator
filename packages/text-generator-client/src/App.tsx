@@ -1,17 +1,28 @@
-import './App.css'
+import { useAuth0 } from '@auth0/auth0-react'
 import { TextGenerator } from './modules'
-import { Box, CssBaseline } from '@mui/material'
+import { Route, Routes } from 'react-router-dom'
+import { CallbackPage, LoginScreen } from './pages'
+import { HealthCheckScreen } from './pages/HealthCheckScreen'
+import { PageLoader } from './components/PageLoader'
+import { ProfilePage } from './pages/ProfilePage'
+import { AuthGuard } from './components/AuthGuard'
+import './App.css'
 
 function App() {
+  const { isLoading } = useAuth0()
+
+  if (isLoading) {
+    return <PageLoader />
+  }
 
   return (
-    <>
-    <CssBaseline />
-    <Box>
-      <h1>Text Generator App</h1>
-      <TextGenerator.Screens.PromptGenerator />
-    </Box>
-    </>
+    <Routes>
+      <Route path='/' element={<LoginScreen />} />
+      <Route path='/healthCheck' element={<AuthGuard component={HealthCheckScreen}/>} />
+      <Route path='/profile' element={<AuthGuard component={ProfilePage}/>} />
+      <Route path='/text-generator' element={<AuthGuard component={TextGenerator.Screens.PromptGenerator}/>} />
+      <Route path='/callback' element={<CallbackPage />} />
+    </Routes>
   )
 }
 
