@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "start:dev": "NODE_ENV=development nodemon index.ts"
+    "start": "node index.ts",
+    "start:dev": "NODE_ENV=development nodemon index.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
     "@tsconfig/node20": "20.1.4",
