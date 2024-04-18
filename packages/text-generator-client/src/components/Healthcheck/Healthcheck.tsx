@@ -7,7 +7,8 @@ export const HealthCheck = () => {
 
   const getHealthCheck = async () => {
     try {
-      const url = 'http://localhost:1234/api/v1/healthcheck'
+      const baseUrl = import.meta.env.VITE_API_SERVER_URL
+      const url = `${baseUrl}/api/v1/healthcheck`
       const response = await axios.get(url)
       return response.data
     } catch (error) {

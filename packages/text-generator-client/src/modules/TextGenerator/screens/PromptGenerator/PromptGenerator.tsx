@@ -40,7 +40,9 @@ export const PromptGenerator = () => {
           'Content-Type': 'application/json'
         }
       }
-      const response = await fetch('http://localhost:1234/api/v1/text-generator', config)
+      const baseUrl = import.meta.env.VITE_API_SERVER_URL
+      const url = `${baseUrl}/api/v1/text-generator`
+      const response = await fetch(url, config)
 
       if(!response.ok) {
         throw new Error('Error fetching data')
