@@ -5,7 +5,7 @@ import {
 import { fromPairs, get, map, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
-import { ChatCompletionStream } from 'openai/src/lib/ChatCompletionStream.js'
+import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
 
 export interface IFormData {
