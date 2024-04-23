@@ -7,7 +7,7 @@ import { initialiseDependencies } from './v1/dependencies'
 
 dotenv.config()
 
-export const start = () => {
+const start = () => {
   const { PORT: port, CLIENT_URL: clientUrl } = process.env
 
   const app = express()
@@ -37,3 +37,5 @@ export const start = () => {
     console.error('Error initialising dependencies: ', error)
   })
 }
+
+export { start }
