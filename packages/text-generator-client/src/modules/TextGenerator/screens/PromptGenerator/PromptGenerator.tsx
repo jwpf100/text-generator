@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import {
-  Container
-} from '@mui/material'
+import { Container } from '@mui/material'
 import { fromPairs, get, map, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
-import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
+// import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
 export interface IFormData {
   templateType: string
@@ -24,7 +22,16 @@ export interface IPromptTemplateData {
   jobDescriptionIntro?: string
   additionalFields?: string[]
 }
-export interface IPromptInputs extends IFormData, IPromptTemplateData {} 
+export interface IPromptInputs extends IFormData, IPromptTemplateData {}
+
+export interface IChatMessage {
+  role: string
+  content: string
+}
+export interface IChatCompletionResponse {
+  finish_reason: string
+  message: string | IChatMessage
+}
 
 export interface IChatMessage {
   role: string
@@ -38,7 +45,7 @@ export interface IChatCompletionResponse {
 export const PromptGenerator = () => {
   const [textOutput, setTextOutput] = useState('')
 
-
+  /*
   const getStreamedResponse = async (promptInputs: IPromptInputs) => {
     const config = {
       method: 'POST',
@@ -67,6 +74,7 @@ export const PromptGenerator = () => {
     }
     throw new Error('Error: No data returned')
   }
+*/
 
   const getCompletionResponse = async (promptInputs: IPromptInputs) => {
     const config = {
@@ -79,18 +87,18 @@ export const PromptGenerator = () => {
     const baseUrl = import.meta.env.VITE_API_SERVER_URL
     const url = `${baseUrl}/api/v1/completion-text-generator`
     const response = await fetch(url, config)
-    if(!response.ok) {
+    if (!response.ok) {
       throw new Error('Error fetching data')
     }
 
-    if(response.body !== null) {
-      const data = await response.json() as IChatCompletionResponse
+    if (response.body !== null) {
+      const data = (await response.json()) as IChatCompletionResponse
       const { message, finish_reason } = data
-      if(finish_reason === 'stop') {
-        if(get(message, 'content')) {
+      if (finish_reason === 'stop') {
+        if (get(message, 'content')) {
           return setTextOutput(get(message, 'content', ''))
         }
-        if(typeof message === 'string') {
+        if (typeof message === 'string') {
           return setTextOutput(message)
         }
         return setTextOutput('No data from completion')
@@ -105,7 +113,7 @@ export const PromptGenerator = () => {
       // await getStreamedResponse(revisedPromptInputs)
       await getCompletionResponse(revisedPromptInputs)
     } catch (error) {
-      console.log("Prompt generation error: ", error)
+      console.log('Prompt generation error: ', error)
     }
   }
 
@@ -113,7 +121,7 @@ export const PromptGenerator = () => {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     const formData = fromPairs(map([...form.entries()], ([key, value]) => [key, value]))
-    const selectedTemplate = get(coverLetterConfig, `promptTemplates[${formData.templateType}]`, {title: ''}) as IPromptTemplateData
+    const selectedTemplate = get(coverLetterConfig, `promptTemplates[${formData.templateType}]`, { title: '' }) as IPromptTemplateData
     const data: IPromptInputs = {
       templateType: formData.templateType as string,
       numberOfParagraphs: formData.numberOfParagraphs as string,
@@ -127,9 +135,9 @@ export const PromptGenerator = () => {
   }
 
   return (
-    <Container maxWidth='sm'  sx={{ my: { xs: 2, sm: 4 } }}>
+    <Container maxWidth='sm' sx={{ my: { xs: 2, sm: 4 } }}>
       <h3>Prompt Generator Screen</h3>
-      <PromptGeneratorForm handleSubmit={handleSubmit}/>
+      <PromptGeneratorForm handleSubmit={handleSubmit} />
       <PromptOutput textOutput={textOutput} />
     </Container>
   )
