@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Container } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import { fromPairs, get, map, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
-// import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
+import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
+import { SwitchComponent } from '../../components/FormComponents/SwitchComponent'
+
 export interface IFormData {
   templateType: string
   numberOfParagraphs?: string | number
@@ -44,8 +46,24 @@ export interface IChatCompletionResponse {
 
 export const PromptGenerator = () => {
   const [textOutput, setTextOutput] = useState('')
+  const [streaming, setStreaming] = useState(false)
+  const appTitle = 'Chat GPT Cover Letter Assistant'
 
-  /*
+  const renderStreamingSwitch = () => {
+    import.meta.env.VITE_STREAMING_OPTION_ENABLED
+    return (
+      <Box sx={{ my: { xs: 0, sm: 0 } }}>
+        <SwitchComponent
+          label={'Stream response'}
+          checked={streaming}
+          onChange={() => setStreaming(!streaming)}
+          name={'streaming'}
+          disabled={!import.meta.env.VITE_STREAMING_OPTION_ENABLED}
+        />
+      </Box>
+    )
+  }
+
   const getStreamedResponse = async (promptInputs: IPromptInputs) => {
     const config = {
       method: 'POST',
@@ -58,14 +76,14 @@ export const PromptGenerator = () => {
     const url = `${baseUrl}/api/v1/stream-text-generator`
     const response = await fetch(url, config)
 
-    if(!response.ok) {
+    if (!response.ok) {
       throw new Error('Error fetching data')
     }
 
-    if(response.body !== null) {
+    if (response.body !== null) {
       const runner = ChatCompletionStream.fromReadableStream(response.body)
       runner.on('content', (delta) => {
-        setTextOutput(prevText => prevText + delta)
+        setTextOutput((prevText) => prevText + delta)
       })
 
       const finalOutput = await runner.finalContent()
@@ -74,7 +92,6 @@ export const PromptGenerator = () => {
     }
     throw new Error('Error: No data returned')
   }
-*/
 
   const getCompletionResponse = async (promptInputs: IPromptInputs) => {
     const config = {
@@ -110,8 +127,11 @@ export const PromptGenerator = () => {
   const getTextPromptResponse = async (promptInputs: IPromptInputs) => {
     const revisedPromptInputs = omit(promptInputs, 'additionalFields')
     try {
-      // await getStreamedResponse(revisedPromptInputs)
-      await getCompletionResponse(revisedPromptInputs)
+      if (streaming) {
+        await getStreamedResponse(revisedPromptInputs)
+      } else {
+        await getCompletionResponse(revisedPromptInputs)
+      }
     } catch (error) {
       console.log('Prompt generation error: ', error)
     }
@@ -136,7 +156,8 @@ export const PromptGenerator = () => {
 
   return (
     <Container maxWidth='sm' sx={{ my: { xs: 2, sm: 4 } }}>
-      <h3>Prompt Generator Screen</h3>
+      <h3>{appTitle}</h3>
+      {renderStreamingSwitch()}
       <PromptGeneratorForm handleSubmit={handleSubmit} />
       <PromptOutput textOutput={textOutput} />
     </Container>

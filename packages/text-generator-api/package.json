@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --trace-warnings index.js",
     "start:dev": "NODE_ENV=development nodemon index.js",
-    "build": "echo 'JF deleting dist' && rm -rf dist && echo 'JF starting build' && tsc -p tsconfig.json"
+    "watch": "rm -rf dist && tsc -w -p tsconfig.json",
+    "build": "echo 'deleting dist' && rm -rf dist && echo 'starting build' && tsc -p tsconfig.json && echo 'finished build'"
   },
   "dependencies": {
     "@tsconfig/node20": "20.1.4",
