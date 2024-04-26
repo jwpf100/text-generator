@@ -88,10 +88,17 @@ export class LLMController {
   }
 
 
-  async getModelResponse(req: Request, res: Response) {
+  async getStreamedModelResponse(req: Request, res: Response) {
     console.log('LLMController - Request received:', req.body)
     const prompt = await this.parsePromptInputs(req.body)
     const response = await this.llmService.streamModelResponse(prompt, res)
+    return response
+  }
+
+  async getStandardModelResponse(req: Request) {
+    console.log('LLMController - Request received:', req.body)
+    const prompt = await this.parsePromptInputs(req.body)
+    const response = await this.llmService.completionModelResponse(prompt)
     return response
   }
 }

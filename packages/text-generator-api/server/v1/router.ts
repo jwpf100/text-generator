@@ -8,9 +8,18 @@ v1Router.get('/healthcheck', (req: unknown, res: { send: (arg0: string) => void 
   res.send('Healthcheck OK')
 })
 
-v1Router.post('/text-generator', async (req: Request, res: Response) => {
+v1Router.post('/stream-text-generator', async (req: Request, res: Response) => {
   try {
-    await llmController.getModelResponse(req, res)    
+    await llmController.getStreamedModelResponse(req, res)    
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+v1Router.post('/completion-text-generator', async (req: Request, res: Response) => {
+  try {
+    const response = await llmController.getStandardModelResponse(req)    
+    res.send(response)
   } catch (error) {
     console.error(error)
   }

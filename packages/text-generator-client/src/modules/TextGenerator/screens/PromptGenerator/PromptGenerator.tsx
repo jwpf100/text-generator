@@ -7,7 +7,6 @@ import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
-
 export interface IFormData {
   templateType: string
   numberOfParagraphs?: string | number
@@ -27,38 +26,84 @@ export interface IPromptTemplateData {
 }
 export interface IPromptInputs extends IFormData, IPromptTemplateData {} 
 
+export interface IChatMessage {
+  role: string
+  content: string
+}
+export interface IChatCompletionResponse {
+  finish_reason: string
+  message: string | IChatMessage
+}
+
 export const PromptGenerator = () => {
   const [textOutput, setTextOutput] = useState('')
+
+
+  const getStreamedResponse = async (promptInputs: IPromptInputs) => {
+    const config = {
+      method: 'POST',
+      body: JSON.stringify(promptInputs),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    const baseUrl = import.meta.env.VITE_API_SERVER_URL
+    const url = `${baseUrl}/api/v1/stream-text-generator`
+    const response = await fetch(url, config)
+
+    if(!response.ok) {
+      throw new Error('Error fetching data')
+    }
+
+    if(response.body !== null) {
+      const runner = ChatCompletionStream.fromReadableStream(response.body)
+      runner.on('content', (delta) => {
+        setTextOutput(prevText => prevText + delta)
+      })
+
+      const finalOutput = await runner.finalContent()
+      // console.dir(finalOutput, { depth: null })
+      return finalOutput
+    }
+    throw new Error('Error: No data returned')
+  }
+
+  const getCompletionResponse = async (promptInputs: IPromptInputs) => {
+    const config = {
+      method: 'POST',
+      body: JSON.stringify(promptInputs),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    const baseUrl = import.meta.env.VITE_API_SERVER_URL
+    const url = `${baseUrl}/api/v1/completion-text-generator`
+    const response = await fetch(url, config)
+    if(!response.ok) {
+      throw new Error('Error fetching data')
+    }
+
+    if(response.body !== null) {
+      const data = await response.json() as IChatCompletionResponse
+      const { message, finish_reason } = data
+      if(finish_reason === 'stop') {
+        if(get(message, 'content')) {
+          return setTextOutput(get(message, 'content', ''))
+        }
+        if(typeof message === 'string') {
+          return setTextOutput(message)
+        }
+        return setTextOutput('No data from completion')
+      }
+      return setTextOutput('Error getting response')
+    }
+  }
 
   const getTextPromptResponse = async (promptInputs: IPromptInputs) => {
     const revisedPromptInputs = omit(promptInputs, 'additionalFields')
     try {
-      const config = {
-        method: 'POST',
-        body: JSON.stringify(revisedPromptInputs),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-      const baseUrl = import.meta.env.VITE_API_SERVER_URL
-      const url = `${baseUrl}/api/v1/text-generator`
-      const response = await fetch(url, config)
-
-      if(!response.ok) {
-        throw new Error('Error fetching data')
-      }
-
-      if(response.body !== null) {
-        const runner = ChatCompletionStream.fromReadableStream(response.body)
-        runner.on('content', (delta) => {
-          setTextOutput(prevText => prevText + delta)
-        })
-  
-        const finalOutput = await runner.finalContent()
-        // console.dir(finalOutput, { depth: null })
-        return finalOutput
-      }
-      throw new Error('Error: No data returned')
+      // await getStreamedResponse(revisedPromptInputs)
+      await getCompletionResponse(revisedPromptInputs)
     } catch (error) {
       console.log("Prompt generation error: ", error)
     }
