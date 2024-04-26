@@ -18,7 +18,7 @@ function App() {
   return (
     <Routes>
       <Route path='/' element={<LoginScreen />} />
-      <Route path='/healthCheck' element={<AuthGuard component={HealthCheckScreen}/>} />
+      <Route path='/healthcheck' element={<AuthGuard component={HealthCheckScreen}/>} />
       <Route path='/profile' element={<AuthGuard component={ProfilePage}/>} />
       <Route path='/text-generator' element={<AuthGuard component={TextGenerator.Screens.PromptGenerator}/>} />
       <Route path='/callback' element={<CallbackPage />} />
