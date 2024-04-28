@@ -1,4 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { IEventTarget } from '../../PromptGeneratorForm/PromptGeneratorForm'
 
 export type TSelectOption = {
   value: string
@@ -11,15 +12,15 @@ export interface ISelectProps {
   name: string
   selectOptions: TSelectOption[]
   value?: string
-  onChange?: (value: string) => void
+  onChange?: (target: IEventTarget) => void
 }
 
 export const SelectComponent = ({
   id,
-  label, 
+  label,
   name,
   selectOptions,
-  value, 
+  value,
   onChange
 }: ISelectProps) => {
   const options = selectOptions.map((item) => (
@@ -29,15 +30,22 @@ export const SelectComponent = ({
   ))
 
   const handleonChange = (event: SelectChangeEvent<string>) => {
-    if(onChange) {
-      onChange(event.target.value)
+    if (onChange) {
+      onChange(event.target)
     }
   }
 
   return (
     <FormControl fullWidth margin='normal'>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
-      <Select name={name} labelId={`${id}-label`} id={id} label={label} value={value} onChange={handleonChange}>
+      <Select
+        name={name}
+        labelId={`${id}-label`}
+        id={id}
+        label={label}
+        value={value}
+        onChange={handleonChange}
+      >
         {...options}
       </Select>
     </FormControl>

@@ -1,12 +1,11 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { Box, CssBaseline } from '@mui/material'
+import { CssBaseline } from '@mui/material'
 import { BrowserRouter } from 'react-router-dom'
 import { Auth0ProviderWithNavigate } from './AuthProviderWithNavigate.tsx'
+import App from './App.tsx'
+import './styles.css'
 
-import { NavBar } from './components/NavBar'
 const container = document.getElementById('root')
 const root = createRoot(container!)
 
@@ -15,10 +14,7 @@ root.render(
     <CssBaseline />
     <BrowserRouter>
       <Auth0ProviderWithNavigate>
-        <Box className={'app-container'}>
-          <NavBar />
-          <App />
-        </Box>
+        <App />
       </Auth0ProviderWithNavigate>
     </BrowserRouter>
   </React.StrictMode>

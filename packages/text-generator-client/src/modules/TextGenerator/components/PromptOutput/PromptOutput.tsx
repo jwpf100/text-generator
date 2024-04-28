@@ -4,12 +4,13 @@ import Markdown from 'react-markdown'
 
 export interface IPromptOutputProps {
   textOutput: string
+  visible: boolean
 }
-export const PromptOutput = ({ textOutput }: IPromptOutputProps) => {
+export const PromptOutput = ({ textOutput, visible }: IPromptOutputProps) => {
   const copyToClipboard = () => copy(textOutput)
   return (
-    textOutput.length > 0 && (
-      <Box sx={{ my: { xs: 2, sm: 4 } }}>
+    visible && (
+      <Box>
         <Card>
           <CardActionArea onClick={copyToClipboard}>
             <CardContent>

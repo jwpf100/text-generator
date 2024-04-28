@@ -6,48 +6,27 @@ import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
 import { SwitchComponent } from '../../components/FormComponents/SwitchComponent'
-
-export interface IFormData {
-  templateType: string
-  numberOfParagraphs?: string | number
-  jobTitle?: string
-  jobSource?: string
-  jobDescription?: string
-  resume?: string
-}
-
-export interface IPromptTemplateData {
-  title: string
-  system?: string
-  user?: string
-  resumeIntro?: string
-  jobDescriptionIntro?: string
-  additionalFields?: string[]
-}
-export interface IPromptInputs extends IFormData, IPromptTemplateData {}
-
-export interface IChatMessage {
-  role: string
-  content: string
-}
-export interface IChatCompletionResponse {
-  finish_reason: string
-  message: string | IChatMessage
-}
-
-export interface IChatMessage {
-  role: string
-  content: string
-}
-export interface IChatCompletionResponse {
-  finish_reason: string
-  message: string | IChatMessage
-}
+import { IChatCompletionResponse, IPromptInputs, IPromptTemplateData } from '../../implementation/PromptGenerator.types'
+import { PageLoader } from '../../../../components/PageLoader'
 
 export const PromptGenerator = () => {
+  const [showForm, setShowForm] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [textOutput, setTextOutput] = useState('')
   const [streaming, setStreaming] = useState(false)
   const appTitle = 'Chat GPT Cover Letter Assistant'
+
+  // 1 - Filling in form = show form && hide Response
+  //     textOutput = '' / isLoading === false && show form === true
+
+  // 2 - fething Data = hide form && show loading screen
+  //     isLoading = true
+
+  // 3 - data recieved = hide form ((button to show form)) && show response
+  //     isLoading = false && textoutput.length > 0 && show form === false
+
+  // 4 - data recieved = show form ((button to hide form)) && show response
+  //     textoutput.length > 0 && isLoading = false &&  show form === true show form === true
 
   const renderStreamingSwitch = () => {
     import.meta.env.VITE_STREAMING_OPTION_ENABLED
@@ -60,6 +39,15 @@ export const PromptGenerator = () => {
           name={'streaming'}
           disabled={!import.meta.env.VITE_STREAMING_OPTION_ENABLED}
         />
+      </Box>
+    )
+  }
+
+  const renderShowFormSwitch = () => {
+    import.meta.env.VITE_STREAMING_OPTION_ENABLED
+    return (
+      <Box sx={{ my: { xs: 0, sm: 0 } }}>
+        <SwitchComponent label={'Show form'} checked={showForm} onChange={() => setShowForm(!showForm)} name={'showForm'} disabled={isLoading} />
       </Box>
     )
   }
@@ -103,24 +91,36 @@ export const PromptGenerator = () => {
     }
     const baseUrl = import.meta.env.VITE_API_SERVER_URL
     const url = `${baseUrl}/api/v1/completion-text-generator`
-    const response = await fetch(url, config)
-    if (!response.ok) {
-      throw new Error('Error fetching data')
-    }
 
-    if (response.body !== null) {
-      const data = (await response.json()) as IChatCompletionResponse
-      const { message, finish_reason } = data
-      if (finish_reason === 'stop') {
-        if (get(message, 'content')) {
-          return setTextOutput(get(message, 'content', ''))
-        }
-        if (typeof message === 'string') {
-          return setTextOutput(message)
-        }
-        return setTextOutput('No data from completion')
+    setIsLoading(true)
+    try {
+      const response = await fetch(url, config)
+      if (!response.ok) {
+        throw new Error('Error fetching data')
       }
-      return setTextOutput('Error getting response')
+
+      if (response.body !== null) {
+        const data = (await response.json()) as IChatCompletionResponse
+        const { message, finish_reason } = data
+
+        if (finish_reason === 'stop') {
+          if (get(message, 'content')) {
+            setTextOutput(get(message, 'content', ''))
+          } else if (typeof message === 'string') {
+            setTextOutput(message)
+          } else {
+            setTextOutput('No data from completion')
+          }
+        } else {
+          setTextOutput('Error getting response')
+        }
+      }
+      setShowForm(false)
+      setIsLoading(false)
+    } catch (error) {
+      setTextOutput(`Error: ${error}`)
+      setShowForm(false)
+      setIsLoading(false)
     }
   }
 
@@ -154,12 +154,22 @@ export const PromptGenerator = () => {
     getTextPromptResponse(data)
   }
 
+  const PromptGeneratorContainer = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <Container>
+        <h3>{appTitle}</h3>
+        {renderStreamingSwitch()}
+        {renderShowFormSwitch()}
+        {children}
+      </Container>
+    )
+  }
+
   return (
-    <Container maxWidth='sm' sx={{ my: { xs: 2, sm: 4 } }}>
-      <h3>{appTitle}</h3>
-      {renderStreamingSwitch()}
-      <PromptGeneratorForm handleSubmit={handleSubmit} />
-      <PromptOutput textOutput={textOutput} />
-    </Container>
+    <PromptGeneratorContainer>
+      {showForm && <PromptGeneratorForm handleSubmit={handleSubmit} visible={!isLoading && showForm} />}
+      {isLoading && <PageLoader />}
+      {textOutput.length > 0 && <PromptOutput textOutput={textOutput} visible={!isLoading && textOutput.length > 0} />}
+    </PromptGeneratorContainer>
   )
 }
