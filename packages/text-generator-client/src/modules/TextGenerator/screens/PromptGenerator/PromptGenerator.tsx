@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { fromPairs, get, map, omit } from 'lodash'
+import { get, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
@@ -8,25 +8,23 @@ import { PromptOutput } from '../../components/PromptOutput'
 import { SwitchComponent } from '../../components/FormComponents/SwitchComponent'
 import { IChatCompletionResponse, IPromptInputs, IPromptTemplateData } from '../../implementation/PromptGenerator.types'
 import { PageLoader } from '../../../../components/PageLoader'
+import { IPromptGeneratorFormData } from '../../components/PromptGeneratorForm/PromptGeneratorForm'
 
 export const PromptGenerator = () => {
-  const [showForm, setShowForm] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [textOutput, setTextOutput] = useState('')
   const [streaming, setStreaming] = useState(false)
+  const [promptInputData, setPromptInputData] = useState({
+    templateType: '',
+    numberOfParagraphs: '',
+    jobTitle: '',
+    jobSource: '',
+    jobDescription: '',
+    resume: ''
+  })
+
   const appTitle = 'Chat GPT Cover Letter Assistant'
-
-  // 1 - Filling in form = show form && hide Response
-  //     textOutput = '' / isLoading === false && show form === true
-
-  // 2 - fething Data = hide form && show loading screen
-  //     isLoading = true
-
-  // 3 - data recieved = hide form ((button to show form)) && show response
-  //     isLoading = false && textoutput.length > 0 && show form === false
-
-  // 4 - data recieved = show form ((button to hide form)) && show response
-  //     textoutput.length > 0 && isLoading = false &&  show form === true show form === true
+  const isData = !isLoading && textOutput.length > 0
 
   const renderStreamingSwitch = () => {
     import.meta.env.VITE_STREAMING_OPTION_ENABLED
@@ -39,15 +37,6 @@ export const PromptGenerator = () => {
           name={'streaming'}
           disabled={!import.meta.env.VITE_STREAMING_OPTION_ENABLED}
         />
-      </Box>
-    )
-  }
-
-  const renderShowFormSwitch = () => {
-    import.meta.env.VITE_STREAMING_OPTION_ENABLED
-    return (
-      <Box sx={{ my: { xs: 0, sm: 0 } }}>
-        <SwitchComponent label={'Show form'} checked={showForm} onChange={() => setShowForm(!showForm)} name={'showForm'} disabled={isLoading} />
       </Box>
     )
   }
@@ -92,7 +81,7 @@ export const PromptGenerator = () => {
     const baseUrl = import.meta.env.VITE_API_SERVER_URL
     const url = `${baseUrl}/api/v1/completion-text-generator`
 
-    setIsLoading(true)
+
     try {
       const response = await fetch(url, config)
       if (!response.ok) {
@@ -115,32 +104,29 @@ export const PromptGenerator = () => {
           setTextOutput('Error getting response')
         }
       }
-      setShowForm(false)
       setIsLoading(false)
     } catch (error) {
       setTextOutput(`Error: ${error}`)
-      setShowForm(false)
-      setIsLoading(false)
     }
   }
 
   const getTextPromptResponse = async (promptInputs: IPromptInputs) => {
     const revisedPromptInputs = omit(promptInputs, 'additionalFields')
     try {
+      setIsLoading(true)
       if (streaming) {
         await getStreamedResponse(revisedPromptInputs)
       } else {
         await getCompletionResponse(revisedPromptInputs)
       }
+      setIsLoading(false)
     } catch (error) {
       console.log('Prompt generation error: ', error)
     }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const formData = fromPairs(map([...form.entries()], ([key, value]) => [key, value]))
+  const handleSubmitNew = (formData: IPromptGeneratorFormData) => {
+    console.log("🚀 ~ handleSubmitNew ~ formData:", formData)
     const selectedTemplate = get(coverLetterConfig, `promptTemplates[${formData.templateType}]`, { title: '' }) as IPromptTemplateData
     const data: IPromptInputs = {
       templateType: formData.templateType as string,
@@ -151,6 +137,7 @@ export const PromptGenerator = () => {
       resume: formData.resume as string,
       ...selectedTemplate
     }
+    setPromptInputData(formData)
     getTextPromptResponse(data)
   }
 
@@ -159,7 +146,6 @@ export const PromptGenerator = () => {
       <Container>
         <h3>{appTitle}</h3>
         {renderStreamingSwitch()}
-        {renderShowFormSwitch()}
         {children}
       </Container>
     )
@@ -167,9 +153,9 @@ export const PromptGenerator = () => {
 
   return (
     <PromptGeneratorContainer>
-      {showForm && <PromptGeneratorForm handleSubmit={handleSubmit} visible={!isLoading && showForm} />}
       {isLoading && <PageLoader />}
-      {textOutput.length > 0 && <PromptOutput textOutput={textOutput} visible={!isLoading && textOutput.length > 0} />}
+      <PromptGeneratorForm inititalValues={promptInputData} handleSubmit={handleSubmitNew} isLoading={isLoading} isData={isData}/>
+      {isData && <PromptOutput textOutput={textOutput} visible={!isLoading && textOutput.length > 0} />}
     </PromptGeneratorContainer>
   )
 }

@@ -1,5 +1,4 @@
 import { TextField } from '@mui/material'
-import { IEventTarget } from '../../PromptGeneratorForm/PromptGeneratorForm'
 
 export interface ITextFieldProps {
   id: string
@@ -8,7 +7,7 @@ export interface ITextFieldProps {
   helperText?: string
   rows?: number
   value?: string
-  onChange?: (target: IEventTarget) => void
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 export const TextFieldComponent = ({
@@ -23,7 +22,7 @@ export const TextFieldComponent = ({
 
   const handleonChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if(onChange) {
-      onChange(event.target)
+      onChange(event)
     }
   }
 
