@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { get, omit } from 'lodash'
+import { get, join, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
@@ -8,7 +8,7 @@ import { PromptOutput } from '../../components/PromptOutput'
 import { SwitchComponent } from '../../../../components/Inputs/SwitchComponent'
 import { IChatCompletionResponse, IPromptInputs, IPromptTemplateData } from '../../implementation/PromptGenerator.types'
 import { PageLoader } from '../../../../components/PageLoader'
-import { IPromptGeneratorFormData } from '../../components/PromptGeneratorForm/PromptGeneratorForm'
+import { IPromptGeneratorFormData } from '../../implementation/PromptGenerator.types'
 
 export const PromptGenerator = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -39,6 +39,18 @@ export const PromptGenerator = () => {
         />
       </Box>
     )
+  }
+
+// TODO: Add more intro prompts?
+// TODO: Add button to select 'add generic sentance' otherwise just get prompt to return normally (e..g with dear sir/madam etc.) 
+  const generateIntro = (promptInputs: IPromptInputs) => {
+    const addOverrideSentance = true
+    const overrideSentance = get(promptInputs, 'overrideSentance')
+    let intro = 'Dear Sir/Madam,\n\n'
+    if(addOverrideSentance){
+      intro = `${intro}${overrideSentance}\n\n`
+    }
+    return intro
   }
 
   const getStreamedResponse = async (promptInputs: IPromptInputs) => {
@@ -91,12 +103,14 @@ export const PromptGenerator = () => {
       if (response.body !== null) {
         const data = (await response.json()) as IChatCompletionResponse
         const { message, finish_reason } = data
-
         if (finish_reason === 'stop') {
+          const intro = generateIntro(promptInputs)
           if (get(message, 'content')) {
-            setTextOutput(get(message, 'content', ''))
-          } else if (typeof message === 'string') {
-            setTextOutput(message)
+            const revisedMessage = `${intro}${get(message, 'content')})`
+            setTextOutput(revisedMessage)
+          } else if (typeof message === 'string') {            
+            const revisedMessage = `${intro}${get(message, 'content')})`
+            setTextOutput(revisedMessage)
           } else {
             setTextOutput('No data from completion')
           }
@@ -112,6 +126,7 @@ export const PromptGenerator = () => {
 
   const getTextPromptResponse = async (promptInputs: IPromptInputs) => {
     const revisedPromptInputs = omit(promptInputs, 'additionalFields')
+    // TODO: Change where this is passed in. 
     try {
       setIsLoading(true)
       if (streaming) {
@@ -125,9 +140,10 @@ export const PromptGenerator = () => {
     }
   }
 
-  const handleSubmitNew = (formData: IPromptGeneratorFormData) => {
-    console.log("🚀 ~ handleSubmitNew ~ formData:", formData)
+  const handleSubmit = (formData: IPromptGeneratorFormData) => {
     const selectedTemplate = get(coverLetterConfig, `promptTemplates[${formData.templateType}]`, { title: '' }) as IPromptTemplateData
+    const overrideSentanceIntro = get(coverLetterConfig, 'overrideSentanceIntro', '')
+    const overrideSentance = get(coverLetterConfig, 'overrideSentance', '')
     const data: IPromptInputs = {
       templateType: formData.templateType as string,
       numberOfParagraphs: formData.numberOfParagraphs as string,
@@ -135,7 +151,9 @@ export const PromptGenerator = () => {
       jobSource: formData.jobSource as string,
       jobDescription: formData.jobDescription as string,
       resume: formData.resume as string,
-      ...selectedTemplate
+      ...selectedTemplate, 
+      overrideSentanceIntro,
+      overrideSentance
     }
     setPromptInputData(formData)
     getTextPromptResponse(data)
@@ -154,7 +172,7 @@ export const PromptGenerator = () => {
   return (
     <PromptGeneratorContainer>
       {isLoading && <PageLoader />}
-      <PromptGeneratorForm inititalValues={promptInputData} handleSubmit={handleSubmitNew} isLoading={isLoading} isData={isData}/>
+      <PromptGeneratorForm inititalValues={promptInputData} handleSubmit={handleSubmit} isLoading={isLoading} isData={isData}/>
       {isData && <PromptOutput textOutput={textOutput} visible={!isLoading && textOutput.length > 0} />}
     </PromptGeneratorContainer>
   )

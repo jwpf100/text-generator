@@ -1,7 +1,11 @@
 import { Response } from 'express'
 import { AbstractDependency } from '../../modules/llm/llm.controller'
 import OpenAI from 'openai'
-import { ChatCompletion, ChatCompletionMessageParam, ChatCompletionMessage } from 'openai/resources/index.mjs'
+import {
+  ChatCompletion,
+  ChatCompletionMessageParam,
+  ChatCompletionMessage
+} from 'openai/resources/index.mjs'
 
 export interface IChatGPTService extends AbstractDependency {
   streamModelResponse(prompt: unknown, res: Response): Promise<void>
@@ -33,7 +37,7 @@ export class ChatGPTService implements AbstractDependency {
     this.config = {
       ...config
     }
-    this.openai = new OpenAI({apiKey: config.openaiApiKey})
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey })
     this.initialised = true
     return null
   }
@@ -43,15 +47,18 @@ export class ChatGPTService implements AbstractDependency {
     return null
   }
 
-  async streamModelResponse(prompt: ChatCompletionMessageParam[], res: Response) {
+  async streamModelResponse(
+    prompt: ChatCompletionMessageParam[],
+    res: Response
+  ) {
     try {
       console.log('Received check if openai initialised:')
-      if(this.openai){
-        console.log('Received prompt:', prompt)
+      console.log('🚀 ~ ChatGPTService ~ streamModelResponse ~ prompt:', prompt)
+      if (this.openai) {
         const stream = this.openai.beta.chat.completions.stream({
           model: 'gpt-3.5-turbo',
           stream: true,
-          messages: [...prompt],
+          messages: [...prompt]
         })
 
         res.header('Content-Type', 'text/plain')
@@ -65,22 +72,33 @@ export class ChatGPTService implements AbstractDependency {
     }
   }
 
-  async completionModelResponse(prompt: ChatCompletionMessageParam[]): Promise<IChatCompletionResponse | undefined>  {
+  async completionModelResponse(
+    prompt: ChatCompletionMessageParam[]
+  ): Promise<IChatCompletionResponse | undefined> {
+    console.log(
+      '🚀 ~ ChatGPTService completionModel ~ streamModelResponse ~ prompt:',
+      prompt
+    )
     try {
-      if(this.openai){
-        console.log('Received prompt:', prompt)
-        const completion: ChatCompletion = await this.openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          stream: false,
-          messages: [...prompt]
-        })
-        
-        const { choices } = completion 
-        const {finish_reason, message} = choices[0] || {finish_reason: 'No data', message: 'No data'}
-        return {finish_reason, message}
+      console.log('completionModel: Check if openai initialised:')
+      if (this.openai) {
+        console.log('Open ai initialised')
+        const completion: ChatCompletion =
+          await this.openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            stream: false,
+            messages: [...prompt]
+          })
+
+        const { choices } = completion
+        const { finish_reason, message } = choices[0] || {
+          finish_reason: 'No data',
+          message: 'No data'
+        }
+        return { finish_reason, message }
       }
     } catch (error) {
       console.log('Error getting response: ', error)
     }
   }
-  }
+}
