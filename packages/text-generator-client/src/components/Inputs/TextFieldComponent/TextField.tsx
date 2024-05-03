@@ -6,6 +6,8 @@ export interface ITextFieldProps {
   name: string
   helperText?: string
   rows?: number
+  value?: string
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 export const TextFieldComponent = ({
@@ -13,8 +15,17 @@ export const TextFieldComponent = ({
   label, 
   name,
   helperText,
-  rows = 4
+  rows = 4,
+  value,
+  onChange,
 }: ITextFieldProps) => {
+
+  const handleonChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if(onChange) {
+      onChange(event)
+    }
+  }
+
   return (
     <TextField
       id={id}
@@ -24,6 +35,8 @@ export const TextFieldComponent = ({
       multiline
       rows={rows}
       margin='normal'
+      value={value}
+      onChange={handleonChange}
       fullWidth
   />
   )

@@ -1,4 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react"
+import { ButtonComponent } from "../../Inputs"
 
 export const SignupButton = () => {
   const { loginWithRedirect } = useAuth0()
@@ -14,5 +15,5 @@ export const SignupButton = () => {
     })
   }
 
-  return <button className="button__sign-up" onClick={handleSignup}>Sign Up</button>
+  return <ButtonComponent onClick={handleSignup}>Sign Up</ButtonComponent>
 }

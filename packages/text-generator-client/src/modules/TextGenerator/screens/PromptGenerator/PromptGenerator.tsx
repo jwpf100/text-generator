@@ -1,53 +1,30 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { fromPairs, get, map, omit } from 'lodash'
+import { get, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
 import { PromptOutput } from '../../components/PromptOutput'
-import { SwitchComponent } from '../../components/FormComponents/SwitchComponent'
-
-export interface IFormData {
-  templateType: string
-  numberOfParagraphs?: string | number
-  jobTitle?: string
-  jobSource?: string
-  jobDescription?: string
-  resume?: string
-}
-
-export interface IPromptTemplateData {
-  title: string
-  system?: string
-  user?: string
-  resumeIntro?: string
-  jobDescriptionIntro?: string
-  additionalFields?: string[]
-}
-export interface IPromptInputs extends IFormData, IPromptTemplateData {}
-
-export interface IChatMessage {
-  role: string
-  content: string
-}
-export interface IChatCompletionResponse {
-  finish_reason: string
-  message: string | IChatMessage
-}
-
-export interface IChatMessage {
-  role: string
-  content: string
-}
-export interface IChatCompletionResponse {
-  finish_reason: string
-  message: string | IChatMessage
-}
+import { SwitchComponent } from '../../../../components/Inputs/SwitchComponent'
+import { IChatCompletionResponse, IPromptInputs, IPromptTemplateData } from '../../implementation/PromptGenerator.types'
+import { PageLoader } from '../../../../components/PageLoader'
+import { IPromptGeneratorFormData } from '../../components/PromptGeneratorForm/PromptGeneratorForm'
 
 export const PromptGenerator = () => {
+  const [isLoading, setIsLoading] = useState(false)
   const [textOutput, setTextOutput] = useState('')
   const [streaming, setStreaming] = useState(false)
+  const [promptInputData, setPromptInputData] = useState({
+    templateType: '',
+    numberOfParagraphs: '',
+    jobTitle: '',
+    jobSource: '',
+    jobDescription: '',
+    resume: ''
+  })
+
   const appTitle = 'Chat GPT Cover Letter Assistant'
+  const isData = !isLoading && textOutput.length > 0
 
   const renderStreamingSwitch = () => {
     import.meta.env.VITE_STREAMING_OPTION_ENABLED
@@ -103,44 +80,53 @@ export const PromptGenerator = () => {
     }
     const baseUrl = import.meta.env.VITE_API_SERVER_URL
     const url = `${baseUrl}/api/v1/completion-text-generator`
-    const response = await fetch(url, config)
-    if (!response.ok) {
-      throw new Error('Error fetching data')
-    }
 
-    if (response.body !== null) {
-      const data = (await response.json()) as IChatCompletionResponse
-      const { message, finish_reason } = data
-      if (finish_reason === 'stop') {
-        if (get(message, 'content')) {
-          return setTextOutput(get(message, 'content', ''))
-        }
-        if (typeof message === 'string') {
-          return setTextOutput(message)
-        }
-        return setTextOutput('No data from completion')
+
+    try {
+      const response = await fetch(url, config)
+      if (!response.ok) {
+        throw new Error('Error fetching data')
       }
-      return setTextOutput('Error getting response')
+
+      if (response.body !== null) {
+        const data = (await response.json()) as IChatCompletionResponse
+        const { message, finish_reason } = data
+
+        if (finish_reason === 'stop') {
+          if (get(message, 'content')) {
+            setTextOutput(get(message, 'content', ''))
+          } else if (typeof message === 'string') {
+            setTextOutput(message)
+          } else {
+            setTextOutput('No data from completion')
+          }
+        } else {
+          setTextOutput('Error getting response')
+        }
+      }
+      setIsLoading(false)
+    } catch (error) {
+      setTextOutput(`Error: ${error}`)
     }
   }
 
   const getTextPromptResponse = async (promptInputs: IPromptInputs) => {
     const revisedPromptInputs = omit(promptInputs, 'additionalFields')
     try {
+      setIsLoading(true)
       if (streaming) {
         await getStreamedResponse(revisedPromptInputs)
       } else {
         await getCompletionResponse(revisedPromptInputs)
       }
+      setIsLoading(false)
     } catch (error) {
       console.log('Prompt generation error: ', error)
     }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const formData = fromPairs(map([...form.entries()], ([key, value]) => [key, value]))
+  const handleSubmitNew = (formData: IPromptGeneratorFormData) => {
+    console.log("🚀 ~ handleSubmitNew ~ formData:", formData)
     const selectedTemplate = get(coverLetterConfig, `promptTemplates[${formData.templateType}]`, { title: '' }) as IPromptTemplateData
     const data: IPromptInputs = {
       templateType: formData.templateType as string,
@@ -151,15 +137,25 @@ export const PromptGenerator = () => {
       resume: formData.resume as string,
       ...selectedTemplate
     }
+    setPromptInputData(formData)
     getTextPromptResponse(data)
   }
 
+  const PromptGeneratorContainer = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <Container>
+        <h3>{appTitle}</h3>
+        {renderStreamingSwitch()}
+        {children}
+      </Container>
+    )
+  }
+
   return (
-    <Container maxWidth='sm' sx={{ my: { xs: 2, sm: 4 } }}>
-      <h3>{appTitle}</h3>
-      {renderStreamingSwitch()}
-      <PromptGeneratorForm handleSubmit={handleSubmit} />
-      <PromptOutput textOutput={textOutput} />
-    </Container>
+    <PromptGeneratorContainer>
+      {isLoading && <PageLoader />}
+      <PromptGeneratorForm inititalValues={promptInputData} handleSubmit={handleSubmitNew} isLoading={isLoading} isData={isData}/>
+      {isData && <PromptOutput textOutput={textOutput} visible={!isLoading && textOutput.length > 0} />}
+    </PromptGeneratorContainer>
   )
 }

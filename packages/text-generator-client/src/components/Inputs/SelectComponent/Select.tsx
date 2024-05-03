@@ -11,15 +11,15 @@ export interface ISelectProps {
   name: string
   selectOptions: TSelectOption[]
   value?: string
-  onChange?: (value: string) => void
+  onChange?: (event: SelectChangeEvent<string>) => void
 }
 
 export const SelectComponent = ({
   id,
-  label, 
+  label,
   name,
   selectOptions,
-  value, 
+  value,
   onChange
 }: ISelectProps) => {
   const options = selectOptions.map((item) => (
@@ -29,15 +29,22 @@ export const SelectComponent = ({
   ))
 
   const handleonChange = (event: SelectChangeEvent<string>) => {
-    if(onChange) {
-      onChange(event.target.value)
+    if (onChange) {
+      onChange(event)
     }
   }
 
   return (
     <FormControl fullWidth margin='normal'>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
-      <Select name={name} labelId={`${id}-label`} id={id} label={label} value={value} onChange={handleonChange}>
+      <Select
+        name={name}
+        labelId={`${id}-label`}
+        id={id}
+        label={label}
+        value={value}
+        onChange={handleonChange}
+      >
         {...options}
       </Select>
     </FormControl>

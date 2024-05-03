@@ -1,16 +1,16 @@
 import { Button, SxProps } from '@mui/material'
 
 export interface IButtonProps {
-  variant: 'contained' | 'outlined' | 'text'
+  variant?: 'contained' | 'outlined' | 'text'
   type?: 'button' | 'reset' | 'submit' | undefined
   onClick?: () => void
-  children: string
+  children?: string
   sx?: SxProps
-  fullWidth: boolean
+  fullWidth?: boolean
 }
 
 export const ButtonComponent = ({
-  variant,
+  variant = 'contained',
   type, 
   onClick,
   children,
