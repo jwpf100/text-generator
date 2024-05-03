@@ -33,9 +33,11 @@ export interface IBoxProps {
 export const PromptGeneratorForm = ({
   handleSubmit,
   inititalValues,
+  isLoading,
   isData
 }: IPromptGeneratorFormProps) => {
-  const [visible, setVisble] = useState(isData ? false : true)
+  console.log("🚀 ~ isLoading:", isLoading)
+  const [visible, setVisble] = useState(isData || isLoading ? false : true)
   const [formData, setFormData] = useState(inititalValues)
 
   const handleOnChange = (event: React.ChangeEvent<HTMLTextAreaElement> | SelectChangeEvent<string>) => {
@@ -159,7 +161,6 @@ export const PromptGeneratorForm = ({
                 onChange={handleOnChange}
               />
             )}
-
             <ButtonComponent
               variant='contained'
               type={'button'}
