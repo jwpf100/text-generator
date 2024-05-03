@@ -1,5 +1,5 @@
 import { FormControlLabel, FormGroup, Switch } from '@mui/material'
-import { IEventTarget } from '../../PromptGeneratorForm/PromptGeneratorForm'
+import { IEventTarget } from '../../../modules/TextGenerator/components/PromptGeneratorForm/PromptGeneratorForm'
 
 export interface ISwitchProps {
   name: string

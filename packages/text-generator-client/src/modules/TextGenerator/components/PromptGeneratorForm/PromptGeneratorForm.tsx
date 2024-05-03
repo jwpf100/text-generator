@@ -1,9 +1,9 @@
-import { SelectComponent } from '../FormComponents/SelectComponent'
+import { SelectComponent } from '../../../../components/Inputs/SelectComponent'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { get, map, range, includes } from 'lodash'
 import { Box, SelectChangeEvent } from '@mui/material'
-import { TextFieldComponent } from '../FormComponents/TextFieldComponent'
-import { ButtonComponent } from '../FormComponents/ButtonComponent'
+import { TextFieldComponent } from '../../../../components/Inputs/TextFieldComponent'
+import { ButtonComponent } from '../../../../components/Inputs/ButtonComponent'
 import { useState } from 'react'
 
 export interface IPromptGeneratorFormData {
