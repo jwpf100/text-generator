@@ -14,6 +14,8 @@ export interface IPromptTemplateData {
   resumeIntro?: string
   jobDescriptionIntro?: string
   additionalFields?: string[]
+  overrideSentanceIntro?: string
+  overrideSentance? : string
 }
 export interface IPromptInputs extends IFormData, IPromptTemplateData {}
 
@@ -33,4 +35,18 @@ export interface IChatMessage {
 export interface IChatCompletionResponse {
   finish_reason: string
   message: string | IChatMessage
+}
+export interface IPromptGeneratorFormData {
+  templateType: string
+  numberOfParagraphs: string
+  jobTitle: string
+  jobSource: string
+  jobDescription: string
+  resume: string
+}
+export interface IPromptGeneratorFormProps {
+  handleSubmit: (formData: IPromptGeneratorFormData) => void
+  isLoading: boolean
+  isData: boolean
+  inititalValues: IPromptGeneratorFormData
 }

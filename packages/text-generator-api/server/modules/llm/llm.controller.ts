@@ -47,10 +47,12 @@ export class LLMController {
   // Turn config from client into suitable prompt
   async parsePromptInputs(promptInputs: { [key: string]: string }) {
     const defaultPromptInputs = {
-      style: 'professional'
+      style: 'professional',
+      signOff: 'warm'
     }
 
     const finalPromptInputs = merge({}, defaultPromptInputs, promptInputs)
+    console.log("🚀 ~ LLMController ~ parsePromptInputs ~ finalPromptInputs:", finalPromptInputs)
     
     const replacePlaceholders = (string: string) => {
       const compiledTemplate = template(string)
@@ -82,8 +84,9 @@ export class LLMController {
       {
         role: 'user',
         content: get(finalPromptInputs, 'jobDescription', '')
-      },
+      }
     ]
+    console.log("🚀 ~ LLMController ~ parsePromptInputs ~ finalPrompt:", finalPrompt)
     return finalPrompt
   }
 

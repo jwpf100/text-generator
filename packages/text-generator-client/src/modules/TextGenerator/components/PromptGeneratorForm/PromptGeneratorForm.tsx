@@ -5,30 +5,7 @@ import { Box, SelectChangeEvent } from '@mui/material'
 import { TextFieldComponent } from '../../../../components/Inputs/TextFieldComponent'
 import { ButtonComponent } from '../../../../components/Inputs/ButtonComponent'
 import { useState } from 'react'
-
-export interface IPromptGeneratorFormData {
-  templateType: string
-  numberOfParagraphs: string
-  jobTitle: string
-  jobSource: string
-  jobDescription: string
-  resume: string
-}
-interface IPromptGeneratorFormProps {
-  handleSubmit: (formData: IPromptGeneratorFormData) => void
-  isLoading: boolean
-  isData: boolean
-  inititalValues: IPromptGeneratorFormData
-}
-
-export interface IEventTarget {
-  name: string
-  value: string
-}
-
-export interface IBoxProps {
-  visible: boolean
-}
+import { IPromptGeneratorFormProps } from '../../implementation/PromptGenerator.types'
 
 export const PromptGeneratorForm = ({
   handleSubmit,
@@ -36,32 +13,13 @@ export const PromptGeneratorForm = ({
   isLoading,
   isData
 }: IPromptGeneratorFormProps) => {
-  console.log("🚀 ~ isLoading:", isLoading)
   const [visible, setVisble] = useState(isData || isLoading ? false : true)
   const [formData, setFormData] = useState(inititalValues)
-
-  const handleOnChange = (event: React.ChangeEvent<HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-    const { name, value } = event.target
-    event.preventDefault()
-    setFormData({ ...formData, [name]: value })
-  }
-
-  const toggleFormVisibility = () => {
-    setVisble((prevVisible) => !prevVisible)
-  }
-
   const fields = get(
     coverLetterConfig,
     `promptTemplates[${formData.templateType}].additionalFields`,
     []
   )
-
-  const handleResetForm = () => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [formData.templateType]: ''
-    }))
-  }
 
   // Sets the tone of the prompt
   const templateTypes = get(coverLetterConfig, 'promptTemplates')
@@ -82,6 +40,23 @@ export const PromptGeneratorForm = ({
     }
   )
 
+  const toggleFormVisibility = () => {
+    setVisble((prevVisible) => !prevVisible)
+  }
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+    const { name, value } = event.target
+    event.preventDefault()
+    setFormData({ ...formData, [name]: value })
+  }
+
+  const handleResetForm = () => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [formData.templateType]: ''
+    }))
+  }
+  
   const handleFormSubmit = () => {
     handleSubmit(formData)
   }
