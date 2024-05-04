@@ -1,12 +1,11 @@
 import { FormControlLabel, FormGroup, Switch } from '@mui/material'
-import { IEventTarget } from '../../../modules/TextGenerator/components/PromptGeneratorForm/PromptGeneratorForm'
 
 export interface ISwitchProps {
   name: string
   label: string
   disabled?: boolean
   checked?: boolean
-  onChange?: (target: IEventTarget) => void
+  onChange?: () => void
 }
 
 export const SwitchComponent = ({
@@ -17,9 +16,9 @@ export const SwitchComponent = ({
   onChange,
 }: ISwitchProps) => {
 
-  const handleonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleonChange = () => {
     if(onChange) {
-      onChange(event.target)
+      onChange()
     }
   }
 

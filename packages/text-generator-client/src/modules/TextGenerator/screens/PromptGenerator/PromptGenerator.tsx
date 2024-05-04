@@ -50,7 +50,7 @@ export const PromptGenerator = () => {
         <SwitchComponent
           label={'Add ChatGPT Project Details'}
           checked={manualSentance}
-          onChange={() => setManualSentance(!streaming)}
+          onChange={() => setManualSentance(!manualSentance)}
           name={'manualSentance'}
         />
       </Box>
