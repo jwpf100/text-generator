@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { get, merge, omit } from 'lodash'
+import { forEach, get, merge, omit, replace } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
@@ -70,6 +70,20 @@ export const PromptGenerator = () => {
     return intro
   }
 
+  const removePhrases = (text: string, regexArray: string[] = []) => {
+    const standardRegex: RegExp[] = [
+      /\bDear\s+Hiring\s+Manager\b,?/gi,
+      /\bDear\s+Hiring\s+Team\b,?/gi,
+      /\[Your Name\]/i
+    ]
+    const combinedRegex = [...standardRegex, ...regexArray]
+    forEach(combinedRegex, (regex) => {
+      text = replace(text, regex, '')
+    })
+    return text
+  }
+
+  // Legacy code, needs to be refactored
   const getStreamedResponse = async (promptInputs: IPromptInputs) => {
     const config = {
       method: 'POST',
@@ -122,10 +136,15 @@ export const PromptGenerator = () => {
         if (finish_reason === 'stop') {
           const intro = generateIntro(promptInputs)
           if (get(message, 'content')) {
-            const revisedMessage = `${intro}${get(message, 'content')}`
+            console.log("🚀 ~ getCompletionResponse ~ get(message, 'content'):")
+            const revisedMessage = `${intro}${removePhrases(get(message, 'content', ''))}`
             setTextOutput(revisedMessage)
           } else if (typeof message === 'string') {
-            const revisedMessage = `${intro}${get(message, 'content')}`
+            console.log(
+              "🚀 ~ getCompletionResponse ~ typeof message === 'string':",
+              typeof message === 'string'
+            )
+            const revisedMessage = `${intro}${removePhrases(get(message, 'content', ''))}`
             setTextOutput(revisedMessage)
           } else {
             setTextOutput('No data from completion')
@@ -164,7 +183,9 @@ export const PromptGenerator = () => {
     ) as IPromptTemplateData
     const overrideSentance = get(coverLetterConfig, 'overrideSentance', '')
 
-    const data: IPromptInputs = merge({}, formData, selectedTemplate, {overrideSentance: overrideSentance})
+    const data: IPromptInputs = merge({}, formData, selectedTemplate, {
+      overrideSentance: overrideSentance
+    })
 
     setPromptInputData(formData)
     getTextPromptResponse(data)

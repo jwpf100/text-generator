@@ -90,6 +90,14 @@ export class LLMController {
       },
       {
         role: 'user',
+        content: replacePlaceholders(get(finalPromptInputs, 'jobCompanyNameIntro', ''))
+      },
+      {
+        role: 'user',
+        content: get(finalPromptInputs, 'jobCompanyName', '')
+      },
+      {
+        role: 'user',
         content: replacePlaceholders(get(finalPromptInputs, 'jobDescriptionIntro', ''))
       },
       {
