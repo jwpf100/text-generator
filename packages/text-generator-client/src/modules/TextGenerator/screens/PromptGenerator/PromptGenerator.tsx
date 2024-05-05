@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { get, omit } from 'lodash'
+import { get, merge, omit } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
@@ -22,6 +22,8 @@ export const PromptGenerator = () => {
   const [promptInputData, setPromptInputData] = useState({
     templateType: '',
     numberOfParagraphs: '',
+    applicantName: '',
+    jobCompanyName: '',
     jobTitle: '',
     jobSource: '',
     jobDescription: '',
@@ -160,23 +162,10 @@ export const PromptGenerator = () => {
       `promptTemplates[${formData.templateType}]`,
       { title: '' }
     ) as IPromptTemplateData
-    const overrideSentanceIntro = get(
-      coverLetterConfig,
-      'overrideSentanceIntro',
-      ''
-    )
     const overrideSentance = get(coverLetterConfig, 'overrideSentance', '')
-    const data: IPromptInputs = {
-      templateType: formData.templateType as string,
-      numberOfParagraphs: formData.numberOfParagraphs as string,
-      jobTitle: formData.jobTitle as string,
-      jobSource: formData.jobSource as string,
-      jobDescription: formData.jobDescription as string,
-      resume: formData.resume as string,
-      ...selectedTemplate,
-      overrideSentanceIntro,
-      overrideSentance
-    }
+
+    const data: IPromptInputs = merge({}, formData, selectedTemplate, {overrideSentance: overrideSentance})
+
     setPromptInputData(formData)
     getTextPromptResponse(data)
   }
