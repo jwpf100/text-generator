@@ -1,6 +1,7 @@
 import { SelectComponent } from '../../../../components/Inputs/SelectComponent'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
-import { get, map, range, includes } from 'lodash'
+import dummyDataConfig from '../../config/dummyData.json'
+import { get, map, range, includes, merge } from 'lodash'
 import { Box, SelectChangeEvent } from '@mui/material'
 import { TextFieldComponent } from '../../../../components/Inputs/TextFieldComponent'
 import { ButtonComponent } from '../../../../components/Inputs/ButtonComponent'
@@ -15,6 +16,9 @@ export const PromptGeneratorForm = ({
 }: IPromptGeneratorFormProps) => {
   const [visible, setVisble] = useState(isData || isLoading ? false : true)
   const [formData, setFormData] = useState(inititalValues)
+  const dummyData = { ...dummyDataConfig }
+
+  // Sets the tone of the prompt
   const fields = get(
     coverLetterConfig,
     `promptTemplates[${formData.templateType}].additionalFields`,
@@ -44,7 +48,9 @@ export const PromptGeneratorForm = ({
     setVisble((prevVisible) => !prevVisible)
   }
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+  const handleOnChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement> | SelectChangeEvent<string>
+  ) => {
     const { name, value } = event.target
     event.preventDefault()
     setFormData({ ...formData, [name]: value })
@@ -56,9 +62,14 @@ export const PromptGeneratorForm = ({
       [formData.templateType]: ''
     }))
   }
-  
+
   const handleFormSubmit = () => {
     handleSubmit(formData)
+  }
+
+  const useDummyData = () => {
+    const updatedFormData = merge({}, formData, dummyData)
+    setFormData(updatedFormData)
   }
 
   return (
@@ -85,6 +96,15 @@ export const PromptGeneratorForm = ({
               value={formData.templateType}
               onChange={handleOnChange}
             />
+            <ButtonComponent
+              variant='contained'
+              type={'button'}
+              onClick={useDummyData}
+              fullWidth
+              sx={{ my: 1 }}
+            >
+              {'Populate form with example data'}
+            </ButtonComponent>
             {includes(fields, 'numberOfParagraphs') && (
               <SelectComponent
                 id='select-paragraph-number'

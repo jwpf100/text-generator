@@ -43,6 +43,8 @@ export interface IPromptGeneratorFormData {
   jobSource: string
   jobDescription: string
   resume: string
+  applicantName: string
+  jobCompanyName: string
 }
 export interface IPromptGeneratorFormProps {
   handleSubmit: (formData: IPromptGeneratorFormData) => void
