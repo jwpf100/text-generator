@@ -61,7 +61,10 @@ export class LLMController {
 
     const mapUserInputs = ( userInputs: string | string[]) => {
       if (typeof userInputs === 'string') {
-        return replacePlaceholders(userInputs)
+        return [{
+          role: 'user', 
+          content: replacePlaceholders(userInputs)
+        }]
       }
       const mapOfInputs = map(userInputs, (input) => {
          return {

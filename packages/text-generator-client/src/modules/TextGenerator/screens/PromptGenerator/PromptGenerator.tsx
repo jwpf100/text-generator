@@ -170,6 +170,20 @@ export const PromptGenerator = () => {
     getTextPromptResponse(data)
   }
 
+  const handleReset = () => {
+    setPromptInputData({
+      templateType: '',
+      numberOfParagraphs: '',
+      applicantName: '',
+      jobCompanyName: '',
+      jobTitle: '',
+      jobSource: '',
+      jobDescription: '',
+      resume: ''
+    })
+    setTextOutput('')
+  }
+
   const reSubmitForm = () => {
     handleSubmit(promptInputData)
   }
@@ -201,6 +215,7 @@ export const PromptGenerator = () => {
         handleSubmit={handleSubmit}
         isLoading={isLoading}
         isData={isData}
+        handleReset={handleReset}
       />
       {isData && (
         <PromptOutput

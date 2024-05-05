@@ -53,7 +53,6 @@ export class ChatGPTService implements AbstractDependency {
   ) {
     try {
       console.log('Received check if openai initialised:')
-      console.log('🚀 ~ ChatGPTService ~ streamModelResponse ~ prompt:', prompt)
       if (this.openai) {
         const stream = this.openai.beta.chat.completions.stream({
           model: 'gpt-3.5-turbo',
@@ -75,10 +74,6 @@ export class ChatGPTService implements AbstractDependency {
   async completionModelResponse(
     prompt: ChatCompletionMessageParam[]
   ): Promise<IChatCompletionResponse | undefined> {
-    console.log(
-      '🚀 ~ ChatGPTService completionModel ~ streamModelResponse ~ prompt:',
-      prompt
-    )
     try {
       console.log('completionModel: Check if openai initialised:')
       if (this.openai) {

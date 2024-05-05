@@ -12,7 +12,8 @@ export const PromptGeneratorForm = ({
   handleSubmit,
   inititalValues,
   isLoading,
-  isData
+  isData,
+  handleReset
 }: IPromptGeneratorFormProps) => {
   const [visible, setVisble] = useState(isData || isLoading ? false : true)
   const [formData, setFormData] = useState(inititalValues)
@@ -56,11 +57,8 @@ export const PromptGeneratorForm = ({
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleResetForm = () => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [formData.templateType]: ''
-    }))
+  const handleFormReset = () => {
+    handleReset()
   }
 
   const handleFormSubmit = () => {
@@ -183,7 +181,7 @@ export const PromptGeneratorForm = ({
                 <ButtonComponent
                   variant='outlined'
                   type={'button'}
-                  onClick={handleResetForm}
+                  onClick={handleFormReset}
                   fullWidth
                   sx={{ my: 1 }}
                 >
