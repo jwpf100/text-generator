@@ -16,6 +16,15 @@
       "additionalFields": ["jobTitle",  "jobSource", "resume", "jobDescription" ],
       "resumeIntro": "Here is my resume:",
       "jobDescriptionIntro": "Here is the description of the job I'm applying for:"
+    },
+    "standardV2": {
+      "title": "Standard v2",
+      "system": "I want you to act as an experienced cover letter writer.",
+      "user": "I'd like you to help me write a cover letter that consists of three paragraphs and follows this standardized structure. In the first paragraph, mention the role I'm applying for which is <%= jobTitle %> and that I've learned about it from <%= jobSource %>. Use the next paragraph to highlight any of my relevant skills, experiences, or accomplishments that align with the job. The third and final paragraph should sign off with my excitement for the role. I'd also like to thank the recruiters for their time in assessing my resume and how I look forward to the next stages of the process. Ensure that the cover letter uses <%= style %> language and tone and follows industry best practice examples. Do not include my name, my address, salutations or greetings, dates or a subject at the start of the letter.  Don't include any additional text other than the cover letter and a <%= signOff %> valediction at the end that includes my name.",
+      "additionalFields": ["jobTitle",  "jobSource", "resume", "jobDescription", "jobCompanyName" ],
+      "resumeIntro": "Here is my resume:",
+      "jobDescriptionIntro": "Here is the description of the job I'm applying for:",
+      "jobCompanyNameIntro": "Here is the name of the company the job is with:"
     }
   },
   "promptTemplatesWIP": {

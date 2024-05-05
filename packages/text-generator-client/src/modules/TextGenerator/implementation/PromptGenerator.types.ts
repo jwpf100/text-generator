@@ -51,4 +51,5 @@ export interface IPromptGeneratorFormProps {
   isLoading: boolean
   isData: boolean
   inititalValues: IPromptGeneratorFormData
+  handleReset: () => void
 }

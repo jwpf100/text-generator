@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { IChatGPTService } from '../../integrations/chatgpt/chatgpt.service'
-import { get, template, merge } from 'lodash'
+import { get, template, merge, map } from 'lodash'
 
 export interface AbstractDependency {
   /**
@@ -52,7 +52,6 @@ export class LLMController {
     }
 
     const finalPromptInputs = merge({}, defaultPromptInputs, promptInputs)
-    console.log("🚀 ~ LLMController ~ parsePromptInputs ~ finalPromptInputs:", finalPromptInputs)
     
     const replacePlaceholders = (string: string) => {
       const compiledTemplate = template(string)
@@ -60,15 +59,27 @@ export class LLMController {
       return replacedString
     }
 
+    const mapUserInputs = ( userInputs: string | string[]) => {
+      if (typeof userInputs === 'string') {
+        return [{
+          role: 'user', 
+          content: replacePlaceholders(userInputs)
+        }]
+      }
+      const mapOfInputs = map(userInputs, (input) => {
+         return {
+          role: 'user', 
+          content: replacePlaceholders(input)
+        }
+      })
+      return mapOfInputs
+    }
     const finalPrompt = [
       {
         role: 'system',
         content: replacePlaceholders(get(finalPromptInputs, 'system', ''))
       },
-      {
-        role: 'user',
-        content: replacePlaceholders(get(finalPromptInputs, 'user', ''))
-      },
+      ...mapUserInputs(get(finalPromptInputs, 'user', '')),
       {
         role: 'user',
         content: replacePlaceholders(get(finalPromptInputs, 'resumeIntro', ''))
@@ -79,6 +90,14 @@ export class LLMController {
       },
       {
         role: 'user',
+        content: replacePlaceholders(get(finalPromptInputs, 'jobCompanyNameIntro', ''))
+      },
+      {
+        role: 'user',
+        content: get(finalPromptInputs, 'jobCompanyName', '')
+      },
+      {
+        role: 'user',
         content: replacePlaceholders(get(finalPromptInputs, 'jobDescriptionIntro', ''))
       },
       {
@@ -86,7 +105,6 @@ export class LLMController {
         content: get(finalPromptInputs, 'jobDescription', '')
       }
     ]
-    console.log("🚀 ~ LLMController ~ parsePromptInputs ~ finalPrompt:", finalPrompt)
     return finalPrompt
   }
 

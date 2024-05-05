@@ -12,12 +12,13 @@ export const PromptGeneratorForm = ({
   handleSubmit,
   inititalValues,
   isLoading,
-  isData
+  isData,
+  handleReset
 }: IPromptGeneratorFormProps) => {
   const [visible, setVisble] = useState(isData || isLoading ? false : true)
   const [formData, setFormData] = useState(inititalValues)
   const dummyData = { ...dummyDataConfig }
-
+  const showButtons = formData.templateType !== ''
   // Sets the tone of the prompt
   const fields = get(
     coverLetterConfig,
@@ -56,11 +57,8 @@ export const PromptGeneratorForm = ({
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleResetForm = () => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [formData.templateType]: ''
-    }))
+  const handleFormReset = () => {
+    handleReset()
   }
 
   const handleFormSubmit = () => {
@@ -96,15 +94,17 @@ export const PromptGeneratorForm = ({
               value={formData.templateType}
               onChange={handleOnChange}
             />
-            <ButtonComponent
-              variant='contained'
-              type={'button'}
-              onClick={useDummyData}
-              fullWidth
-              sx={{ my: 1 }}
-            >
-              {'Populate form with example data'}
-            </ButtonComponent>
+            {showButtons && (
+              <ButtonComponent
+                variant='contained'
+                type={'button'}
+                onClick={useDummyData}
+                fullWidth
+                sx={{ my: 1 }}
+              >
+                {'Populate form with example data'}
+              </ButtonComponent>
+            )}
             {includes(fields, 'numberOfParagraphs') && (
               <SelectComponent
                 id='select-paragraph-number'
@@ -123,6 +123,17 @@ export const PromptGeneratorForm = ({
                 name='jobTitle'
                 rows={1}
                 value={formData.jobTitle}
+                onChange={handleOnChange}
+              />
+            )}
+            {includes(fields, 'jobCompanyName') && (
+              <TextFieldComponent
+                id='text-field-company-name'
+                key='text-field-company-name'
+                label='Who is the job with:'
+                name='jobCompanyName'
+                rows={1}
+                value={formData.jobCompanyName}
                 onChange={handleOnChange}
               />
             )}
@@ -156,24 +167,28 @@ export const PromptGeneratorForm = ({
                 onChange={handleOnChange}
               />
             )}
-            <ButtonComponent
-              variant='contained'
-              type={'button'}
-              fullWidth
-              sx={{ my: 1 }}
-              onClick={handleFormSubmit}
-            >
-              {'Submit'}
-            </ButtonComponent>
-            <ButtonComponent
-              variant='outlined'
-              type={'button'}
-              onClick={handleResetForm}
-              fullWidth
-              sx={{ my: 1 }}
-            >
-              {'Reset Form'}
-            </ButtonComponent>
+            {showButtons && (
+              <>
+                <ButtonComponent
+                  variant='contained'
+                  type={'button'}
+                  fullWidth
+                  sx={{ my: 1 }}
+                  onClick={handleFormSubmit}
+                >
+                  {'Submit'}
+                </ButtonComponent>
+                <ButtonComponent
+                  variant='outlined'
+                  type={'button'}
+                  onClick={handleFormReset}
+                  fullWidth
+                  sx={{ my: 1 }}
+                >
+                  {'Reset Form'}
+                </ButtonComponent>
+              </>
+            )}
           </form>
         </Box>
       )}
