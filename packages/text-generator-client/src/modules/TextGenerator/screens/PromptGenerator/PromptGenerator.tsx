@@ -136,14 +136,9 @@ export const PromptGenerator = () => {
         if (finish_reason === 'stop') {
           const intro = generateIntro(promptInputs)
           if (get(message, 'content')) {
-            console.log("🚀 ~ getCompletionResponse ~ get(message, 'content'):")
             const revisedMessage = `${intro}${removePhrases(get(message, 'content', ''))}`
             setTextOutput(revisedMessage)
           } else if (typeof message === 'string') {
-            console.log(
-              "🚀 ~ getCompletionResponse ~ typeof message === 'string':",
-              typeof message === 'string'
-            )
             const revisedMessage = `${intro}${removePhrases(get(message, 'content', ''))}`
             setTextOutput(revisedMessage)
           } else {
