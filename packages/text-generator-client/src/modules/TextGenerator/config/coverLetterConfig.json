@@ -70,5 +70,5 @@
   },
   "resume": "",
   "jobAdvert": "",
-  "overrideSentance": "This cover letter has been written by chatGPT.  More specifically I've made an app that integrates with ChatGPT and generates a cover letter based on inputs such as a resume and a job description.  The app is hosted at https://app.josephfletcher.co.uk/ and the code can be viewed at https://github.com/jwpf100/text-generator."
+  "overrideSentance": "This cover letter has been written by chatGPT.  More specifically I've made an app that integrates with ChatGPT and generates a cover letter based on inputs such as a resume and a job description.  The app is hosted at https://app.josephfletcher.co.uk/ and you can login with username: <%= testUsername %> & password: <%= testPassword %>.  The code repo can be viewed at https://github.com/jwpf100/text-generator."
 }

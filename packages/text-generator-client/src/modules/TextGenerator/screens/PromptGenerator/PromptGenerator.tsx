@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { forEach, get, merge, omit, replace } from 'lodash'
+import { forEach, get, merge, omit, replace, template } from 'lodash'
 import coverLetterConfig from '../../config/coverLetterConfig.json'
 import { PromptGeneratorForm } from '../../components/PromptGeneratorForm'
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs'
@@ -63,9 +63,17 @@ export const PromptGenerator = () => {
   const generateIntro = (promptInputs: IPromptInputs) => {
     const addOverrideSentance = manualSentance
     const overrideSentance = get(promptInputs, 'overrideSentance')
+    const templateInputs = {
+      testUsername: import.meta.env.VITE_TEST_LOGIN_USERNAME,
+      testPassword: import.meta.env.VITE_TEST_LOGIN_PASSWORD,
+    }
+    
+    const compiledTemplate = template(overrideSentance)
+    const updatedOverrideSentance = compiledTemplate(templateInputs)
+     
     let intro = 'Dear Sir/Madam,\n\n'
     if (addOverrideSentance) {
-      intro = `${intro}${overrideSentance}\n\n`
+      intro = `${intro}${updatedOverrideSentance}\n\n`
     }
     return intro
   }
