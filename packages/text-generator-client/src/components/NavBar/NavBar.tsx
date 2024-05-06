@@ -36,7 +36,7 @@ export const NavBarButtons = ({ signUp }: NavBarButtonsProps) => {
 export const NavBar = () => {
   const navBarConfig: NavBarConfig = {
     title: '',
-    signUpEnabled: true,
+    signUpEnabled: false,
     menuButtonEnabled: false
   }
 
